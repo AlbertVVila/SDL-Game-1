@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _MODULESCENE_H_
+#define _MODULESCENE_H_
+
 #include "Module.h"
 #include "Globals.h"
 
@@ -12,7 +14,9 @@ public:
 
 	bool Init();
 	update_status Update();
-
-	SDL_Texture* graphics;
+	SDL_Texture* graphics = nullptr;
 };
+
+#endif // !_MODULESCENE_H_
+
 
