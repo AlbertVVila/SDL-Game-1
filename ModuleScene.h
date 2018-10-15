@@ -15,6 +15,7 @@ public:
 	bool Init();
 	update_status Update();
 	SDL_Texture* graphics = nullptr;
+	SDL_Rect background;
 };
 
 #endif // !_MODULESCENE_H_

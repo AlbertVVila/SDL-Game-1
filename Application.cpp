@@ -23,8 +23,10 @@ Application::Application()
 Application::~Application()
 {
 	//TODO: from end -> being reverse order, delete list modules
-	for (list<Module*>::iterator it = modules.begin(); it != modules.end(); ++it)
+	for (list<Module*>::reverse_iterator it = modules.rbegin(); it != modules.rend(); ++it)
 		delete *it;
+
+	modules.clear();
 }
 
 bool Application::Init()

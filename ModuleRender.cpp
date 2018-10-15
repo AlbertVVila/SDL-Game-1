@@ -3,6 +3,7 @@
 #include "ModuleRender.h"
 #include "ModuleWindow.h"
 #include "SDL/include/SDL.h"
+#include "glew-2.1.0/include/GL/glew.h"
 
 ModuleRender::ModuleRender()
 {
@@ -28,8 +29,21 @@ bool ModuleRender::Init()
 	if(renderer == NULL)
 	{
 		LOG("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
-		ret = false;
+		return false;
 	}
+
+
+	GLenum err = glewInit();
+	if (err != 0)
+	{
+		LOG("Error initializing glew : %s\n", err);
+		return false;
+	}
+
+	LOG("Vendor: %s", glGetString(GL_VENDOR));
+	LOG("Renderer: %s", glGetString(GL_RENDERER));
+	LOG("OpenGL version supported %s", glGetString(GL_VERSION));
+	LOG("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 	return ret;
 }
@@ -50,6 +64,7 @@ update_status ModuleRender::Update()
 update_status ModuleRender::PostUpdate()
 {
 	SDL_RenderPresent(renderer);
+	SDL_GL_SwapWindow(App->window->window);
 	return UPDATE_CONTINUE;
 }
 
@@ -57,7 +72,6 @@ update_status ModuleRender::PostUpdate()
 bool ModuleRender::CleanUp()
 {
 	LOG("Destroying renderer");
-
 	//Destroy window
 	if(renderer != NULL)
 	{
