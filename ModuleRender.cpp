@@ -53,7 +53,7 @@ bool ModuleRender::Init()
 	glFrontFace(GL_CCW);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_TEXTURE_2D);
-	glViewport(0, 0, 1024, 768);
+	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	glClearDepth(1.0f);
 	glClearColor(0.3f, 0.3f, 0.3f, 1.f);
 
@@ -62,8 +62,8 @@ bool ModuleRender::Init()
 
 update_status ModuleRender::PreUpdate()
 {
-	SDL_RenderClear(renderer);
-
+	//SDL_RenderClear(renderer);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	return UPDATE_CONTINUE;
 }
 
@@ -75,7 +75,8 @@ update_status ModuleRender::Update()
 
 update_status ModuleRender::PostUpdate()
 {
-	SDL_RenderPresent(renderer);
+	//SDL_RenderPresent(renderer);
+	Draw();
 	SDL_GL_SwapWindow(App->window->window);
 	return UPDATE_CONTINUE;
 }
@@ -118,4 +119,35 @@ bool ModuleRender::Blit(SDL_Texture* texture, int x, int y, SDL_Rect* section)
 	}
 
 	return ret;
+}
+
+void ModuleRender::Draw()
+{
+	//Create VBO
+	float buffer_data[] = { -1.0f, -1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		0.0f, 1.0f, 0.0f };
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(buffer_data), buffer_data,
+		GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	//Draw Triangle
+	glEnableVertexAttribArray(0); // attribute 0
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glVertexAttribPointer(
+		0, // attribute 0
+		3, // number of componentes (3 floats)
+		GL_FLOAT, // data type
+		GL_FALSE, // should be normalized?
+		0, // stride
+		(void*)0 // array buffer offset
+	);
+	glDrawArrays(GL_TRIANGLES, 0, 3); // start at 0 and 3 tris
+	glDisableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER,0);
+	
+	glDeleteBuffers(1, &vbo);
 }
